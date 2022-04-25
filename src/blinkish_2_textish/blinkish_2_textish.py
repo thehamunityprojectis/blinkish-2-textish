@@ -1,25 +1,16 @@
 from pythonosc import dispatcher
 from pythonosc import osc_server
+from .. import muse
 
 ip = '0.0.0.0'
 port = 5000
-addresses = []
 
-def handler(address: str, *args):
-    if address not in addresses:
-        addresses.append(address)
-        print(address)
-    raw_entry = str(address) + ':'
-    for arg in args:
-        raw_entry += "," + str(arg)
-    #print(raw_entry)
+
+def eeg_hadler(data):
+    if data is not None:
+        print(data.__dict__)
 
 
 if __name__ == "__main__":
-    dispatcher = dispatcher.Dispatcher()
-    # dispatcher.map("/muse/eeg", handler)
-    dispatcher.map("/*", handler)
-    print("Connecting to  " + ip + ":" + str(port))
-    server = osc_server.ThreadingOSCUDPServer((ip, port), dispatcher)
-    print("Connected")
-    server.serve_forever()
+    muse = muse.Muse('0.0.0.0', 5000)
+    muse.add_listener(muse.DataType.EEG, eeg_hadler())
